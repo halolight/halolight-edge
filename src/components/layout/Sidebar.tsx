@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Users, 
@@ -10,7 +10,8 @@ import {
   Zap,
   HelpCircle,
   LogOut,
-  FileText
+  FileText,
+  ExternalLink
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthContext } from '@/contexts/AuthContext';
@@ -21,7 +22,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Separator } from '@/components/ui/separator';
-import { useNavigate } from 'react-router-dom';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -34,10 +34,6 @@ const menuItems = [
   { icon: Shield, label: '角色权限', path: '/roles', permission: 'roles:read' },
   { icon: FileText, label: '审计日志', path: '/audit-logs', permission: 'roles:read' },
   { icon: Settings, label: '系统设置', path: '/settings', permission: 'settings:read' },
-];
-
-const bottomItems = [
-  { icon: HelpCircle, label: '帮助文档', path: '#help' },
 ];
 
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
@@ -60,13 +56,23 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     navigate('/auth');
   };
 
+  const handleHelpClick = () => {
+    window.open('https://docs.lovable.dev', '_blank');
+  };
+
   const renderNavItem = (item: typeof menuItems[0], index: number) => {
     const isActive = location.pathname === item.path;
     const Icon = item.icon;
 
+    const handleClick = (e: React.MouseEvent) => {
+      // 阻止事件冒泡，避免触发其他行为
+      e.stopPropagation();
+    };
+
     const linkContent = (
       <NavLink
         to={item.path}
+        onClick={handleClick}
         className={cn(
           "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative",
           isActive 
@@ -123,6 +129,27 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     );
   };
 
+  const helpButton = (
+    <button
+      onClick={handleHelpClick}
+      className={cn(
+        "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
+        "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+      )}
+    >
+      <HelpCircle className="h-5 w-5 flex-shrink-0" />
+      <motion.span
+        initial={false}
+        animate={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto' }}
+        transition={{ duration: 0.2 }}
+        className="font-medium whitespace-nowrap overflow-hidden flex items-center gap-2"
+      >
+        帮助文档
+        <ExternalLink className="h-3 w-3" />
+      </motion.span>
+    </button>
+  );
+
   return (
     <motion.aside
       initial={false}
@@ -177,37 +204,15 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       <div className="px-3 pb-4 space-y-2">
         <Separator className="mb-4" />
         
-        {bottomItems.map((item) => {
-          const Icon = item.icon;
-          const content = (
-            <button
-              className={cn(
-                "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
-                "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-              )}
-            >
-              <Icon className="h-5 w-5 flex-shrink-0" />
-              <motion.span
-                initial={false}
-                animate={{ opacity: collapsed ? 0 : 1, width: collapsed ? 0 : 'auto' }}
-                transition={{ duration: 0.2 }}
-                className="font-medium whitespace-nowrap overflow-hidden"
-              >
-                {item.label}
-              </motion.span>
-            </button>
-          );
-
-          if (collapsed) {
-            return (
-              <Tooltip key={item.path} delayDuration={0}>
-                <TooltipTrigger asChild>{content}</TooltipTrigger>
-                <TooltipContent side="right">{item.label}</TooltipContent>
-              </Tooltip>
-            );
-          }
-          return <div key={item.path}>{content}</div>;
-        })}
+        {/* Help Button */}
+        {collapsed ? (
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger asChild>{helpButton}</TooltipTrigger>
+            <TooltipContent side="right">帮助文档</TooltipContent>
+          </Tooltip>
+        ) : (
+          helpButton
+        )}
 
         {/* Sign Out */}
         {collapsed ? (
@@ -242,7 +247,10 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         <Button
           variant="ghost"
           size="sm"
-          onClick={onToggle}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggle();
+          }}
           className="w-full justify-center text-muted-foreground hover:text-foreground mt-2"
         >
           {collapsed ? (

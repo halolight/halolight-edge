@@ -14,7 +14,7 @@ import {
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -34,7 +34,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   Select,
@@ -44,7 +43,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
@@ -257,12 +255,9 @@ export default function Users() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredUsers.map((user, index) => (
-                    <motion.tr
+                  filteredUsers.map((user) => (
+                    <TableRow
                       key={user.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05 }}
                       className="table-row-hover border-border/50"
                     >
                       <TableCell>
@@ -280,9 +275,9 @@ export default function Users() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className={roleConfig[user.role || 'user'].color}>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${roleConfig[user.role || 'user'].color}`}>
                           {roleConfig[user.role || 'user'].label}
-                        </Badge>
+                        </span>
                       </TableCell>
                       <TableCell className="hidden md:table-cell text-muted-foreground">
                         {new Date(user.created_at).toLocaleDateString('zh-CN')}
@@ -323,7 +318,7 @@ export default function Users() {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
-                    </motion.tr>
+                    </TableRow>
                   ))
                 )}
               </TableBody>
