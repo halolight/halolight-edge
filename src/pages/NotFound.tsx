@@ -1,24 +1,22 @@
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import { FileQuestion } from 'lucide-react';
+import StatusPage from '@/components/StatusPage';
 
-const NotFound = () => {
+export default function NotFound() {
   const location = useLocation();
 
   useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+    console.error('404 Error: User attempted to access non-existent route:', location.pathname);
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-muted-foreground">Oops! Page not found</p>
-        <a href="/" className="text-primary underline hover:text-primary/90">
-          Return to Home
-        </a>
-      </div>
-    </div>
+    <StatusPage
+      code="404"
+      title="页面未找到"
+      description="抱歉，您访问的页面不存在或已被移除。请检查网址是否正确，或返回首页继续浏览。"
+      icon={FileQuestion}
+      iconColor="text-warning"
+    />
   );
-};
-
-export default NotFound;
+}
