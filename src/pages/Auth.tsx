@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { z } from 'zod';
 import { Zap, Mail, Lock, User, ArrowRight, Loader2, ArrowLeft, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -30,7 +30,10 @@ const forgotSchema = z.object({
 });
 
 export default function Auth() {
-  const [mode, setMode] = useState<AuthMode>('login');
+  const [searchParams] = useSearchParams();
+  const initialMode = (searchParams.get('mode') as AuthMode) || 'login';
+  
+  const [mode, setMode] = useState<AuthMode>(initialMode);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -48,6 +51,13 @@ export default function Auth() {
       navigate('/dashboard', { replace: true });
     }
   }, [user, navigate]);
+
+  useEffect(() => {
+    const urlMode = searchParams.get('mode') as AuthMode;
+    if (urlMode && ['login', 'signup'].includes(urlMode)) {
+      setMode(urlMode);
+    }
+  }, [searchParams]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -271,16 +281,14 @@ export default function Auth() {
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.3 }}
             >
-              {/* Back Button for forgot/reset-sent */}
-              {(mode === 'forgot' || mode === 'reset-sent') && (
-                <button
-                  onClick={() => switchMode('login')}
-                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  返回登录
-                </button>
-              )}
+              {/* Back Button */}
+              <Link
+                to="/home"
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                返回首页
+              </Link>
 
               <h2 className="text-2xl font-bold mb-2">{title}</h2>
               <p className="text-muted-foreground mb-8">{subtitle}</p>

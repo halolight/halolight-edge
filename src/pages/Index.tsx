@@ -13,7 +13,7 @@ export default function Index() {
       if (user) {
         navigate('/dashboard', { replace: true });
       } else {
-        navigate('/auth', { replace: true });
+        navigate('/home', { replace: true });
       }
     }
   }, [user, loading, navigate]);
