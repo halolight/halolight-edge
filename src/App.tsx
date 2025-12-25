@@ -15,6 +15,11 @@ import Roles from "./pages/Roles";
 import Settings from "./pages/Settings";
 import AuditLogs from "./pages/AuditLogs";
 import NotFound from "./pages/NotFound";
+import Forbidden from "./pages/Forbidden";
+import ServerError from "./pages/ServerError";
+import Unauthorized from "./pages/Unauthorized";
+import Maintenance from "./pages/Maintenance";
+import NetworkError from "./pages/NetworkError";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +41,11 @@ const App = () => (
                 <Route path="/roles" element={<Roles />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/audit-logs" element={<AuditLogs />} />
+                <Route path="/403" element={<Forbidden />} />
+                <Route path="/401" element={<Unauthorized />} />
+                <Route path="/500" element={<ServerError />} />
+                <Route path="/503" element={<Maintenance />} />
+                <Route path="/offline" element={<NetworkError />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
