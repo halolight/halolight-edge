@@ -1,0 +1,6 @@
+# SPA fallback - all routes go to index.html
+# API requests are proxied to backend
+/api/*  https://halolight-edge-api.h7ml.cn/:splat  200
+
+# All other routes serve index.html for client-side routing
+/*  /index.html  200

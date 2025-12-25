@@ -1,0 +1,18 @@
+# Cloudflare Pages Build Configuration
+# https://developers.cloudflare.com/pages/platform/build-configuration
+
+# Build settings
+build_command = "pnpm build"
+build_output_directory = "dist"
+
+# Node version (matches .node-version)
+node_version = "20.18.3"
+
+# Package manager
+package_manager = "pnpm"
+
+# Environment variables (set in Cloudflare Pages dashboard)
+# VITE_SUPABASE_URL
+# VITE_SUPABASE_PUBLISHABLE_KEY
+# VITE_SUPABASE_PROJECT_ID
+
