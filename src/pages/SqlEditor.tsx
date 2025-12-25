@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Play, History, FileText, AlertCircle, CheckCircle, Clock, Trash2, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { CodeMirrorSqlEditor } from '@/components/editors/CodeMirrorSqlEditor';
 import {
   Table,
   TableBody,
@@ -293,12 +293,14 @@ export default function SqlEditor() {
                 <CardDescription>输入并执行 SQL 语句</CardDescription>
               </CardHeader>
               <CardContent>
-                <Textarea
-                  placeholder="输入 SQL 语句...&#10;&#10;示例:&#10;SELECT * FROM profiles LIMIT 10;"
+                <CodeMirrorSqlEditor
                   value={sql}
-                  onChange={(e) => setSql(e.target.value)}
-                  className="font-mono text-sm min-h-[300px]"
-                  spellCheck={false}
+                  onChange={setSql}
+                  height="400px"
+                  placeholder="输入 SQL 语句...
+
+示例:
+SELECT * FROM profiles LIMIT 10;"
                 />
               </CardContent>
             </Card>

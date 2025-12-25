@@ -238,6 +238,70 @@ export default function Users() {
     }
   };
 
+  const handleAddUser = async () => {
+    if (!isAdmin) return;
+
+    // Validate form
+    if (!formData.email || !formData.password) {
+      toast({
+        title: '表单验证失败',
+        description: '邮箱和密码为必填项',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('No active session');
+      }
+
+      // Call Edge Function to create user
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-user`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+            full_name: formData.full_name || formData.email,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || '创建用户失败');
+      }
+
+      toast({
+        title: '用户创建成功',
+        description: `${formData.email} 已成功创建`,
+      });
+
+      setDialogType(null);
+      setFormData({ email: '', full_name: '', password: '' });
+      fetchUsers();
+    } catch (error) {
+      console.error('Error creating user:', error);
+      toast({
+        title: '创建用户失败',
+        description: error instanceof Error ? error.message : '请稍后重试',
+        variant: 'destructive',
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleEditUser = async () => {
     if (!selectedUser || !isAdmin) return;
 
@@ -542,7 +606,7 @@ export default function Users() {
               <Button variant="outline" onClick={() => setDialogType(null)}>
                 取消
               </Button>
-              <Button disabled={saving}>
+              <Button onClick={handleAddUser} disabled={saving}>
                 {saving ? '创建中...' : '创建用户'}
               </Button>
             </DialogFooter>
